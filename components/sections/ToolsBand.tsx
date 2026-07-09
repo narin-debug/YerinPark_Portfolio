@@ -52,7 +52,7 @@ export default function ToolsBand() {
           <span key={tool} className="flex items-center gap-x-8 sm:gap-x-10">
             {tool}
             {i < tools.length - 1 && (
-              <span aria-hidden className="text-lime">
+              <span aria-hidden className="text-accent">
                 /
               </span>
             )}

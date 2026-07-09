@@ -48,19 +48,19 @@ export default async function EditProjectPage({
           name="title"
           defaultValue={item.title}
           required
-          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
         />
         <input
           name="year_category"
           defaultValue={item.year_category ?? ""}
           placeholder="연도 · 카테고리"
-          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
         />
         <input
           name="video_url"
           defaultValue={item.video_url ?? ""}
           placeholder="영상 링크 (유튜브/비메오)"
-          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
         />
         <div>
           <label className="text-xs text-muted">기본 썸네일을 바꾸려면 새 파일을 선택 (선택 사항)</label>
@@ -72,7 +72,7 @@ export default async function EditProjectPage({
         </div>
         <button
           type="submit"
-          className="rounded bg-lime px-4 py-2 text-sm font-medium text-black"
+          className="rounded bg-accent px-4 py-2 text-sm font-medium text-black"
         >
           저장
         </button>

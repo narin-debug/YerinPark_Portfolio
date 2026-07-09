@@ -17,7 +17,7 @@ export default function Contact() {
           <a
             key={email}
             href={`mailto:${email}`}
-            className="text-2xl font-medium text-foreground transition-colors hover:text-lime sm:text-3xl md:text-4xl"
+            className="text-2xl font-medium text-foreground transition-colors hover:text-accent sm:text-3xl md:text-4xl"
           >
             {email}
           </a>
@@ -39,7 +39,7 @@ export default function Contact() {
               href={social.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-muted transition-colors hover:text-lime"
+              className="text-muted transition-colors hover:text-accent"
             >
               {social.label}
             </a>

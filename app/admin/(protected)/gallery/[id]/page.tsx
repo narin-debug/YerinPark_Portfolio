@@ -32,7 +32,7 @@ export default async function EditGalleryItemPage({
           name="caption"
           defaultValue={item.caption}
           required
-          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+          className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
         />
         <div>
           <label className="text-xs text-muted">
@@ -42,7 +42,7 @@ export default async function EditGalleryItemPage({
         </div>
         <button
           type="submit"
-          className="rounded bg-lime px-4 py-2 text-sm font-medium text-black"
+          className="rounded bg-accent px-4 py-2 text-sm font-medium text-black"
         >
           저장
         </button>

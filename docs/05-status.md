@@ -17,7 +17,7 @@
 app/
   layout.tsx        # 메타데이터, 폰트, 다크 테마 고정
   page.tsx           # 섹션 조립 (Hero → Gallery → Intro → Projects → Tools → Contact)
-  globals.css        # 테마 변수(--lime 등), 텍스트 리빌/카드 프레임 CSS
+  globals.css        # 테마 변수(--background/--foreground/--muted/--accent), 텍스트 리빌/카드 프레임 CSS
   admin/
     login/            # 공개 — 비밀번호 로그인 폼 (app/admin/login/actions.ts)
     (protected)/       # /admin/* — middleware.ts가 세션 쿠키 검사 후 통과시킴

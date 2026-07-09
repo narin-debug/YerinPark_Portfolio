@@ -24,17 +24,17 @@ export default async function ProjectsAdminPage() {
             name="title"
             placeholder="프로젝트명"
             required
-            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
           />
           <input
             name="year_category"
             placeholder="연도 · 카테고리 (예: 2025 · 다큐)"
-            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
           />
           <input
             name="video_url"
             placeholder="영상 링크 (유튜브/비메오, 선택)"
-            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
           />
           <div>
             <label className="text-xs text-muted">기본 썸네일 (필수)</label>
@@ -46,7 +46,7 @@ export default async function ProjectsAdminPage() {
           </div>
           <button
             type="submit"
-            className="rounded bg-lime px-4 py-2 text-sm font-medium text-black"
+            className="rounded bg-accent px-4 py-2 text-sm font-medium text-black"
           >
             추가
           </button>
@@ -76,7 +76,7 @@ export default async function ProjectsAdminPage() {
               </div>
               <Link
                 href={`/admin/projects/${item.id}`}
-                className="text-sm text-muted hover:text-lime"
+                className="text-sm text-muted hover:text-accent"
               >
                 수정
               </Link>

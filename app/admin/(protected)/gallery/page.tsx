@@ -24,12 +24,12 @@ export default async function GalleryAdminPage() {
             name="caption"
             placeholder="캡션 (예: 다큐 예고편 편집)"
             required
-            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-lime"
+            className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
           />
           <input type="file" name="image" accept="image/*" required className="w-full text-sm" />
           <button
             type="submit"
-            className="rounded bg-lime px-4 py-2 text-sm font-medium text-black"
+            className="rounded bg-accent px-4 py-2 text-sm font-medium text-black"
           >
             추가
           </button>
@@ -56,7 +56,7 @@ export default async function GalleryAdminPage() {
               <p className="flex-1 text-sm">{item.caption}</p>
               <Link
                 href={`/admin/gallery/${item.id}`}
-                className="text-sm text-muted hover:text-lime"
+                className="text-sm text-muted hover:text-accent"
               >
                 수정
               </Link>
