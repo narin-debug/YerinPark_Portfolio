@@ -37,11 +37,17 @@ export default async function ProjectsAdminPage() {
             className="w-full rounded border border-white/15 bg-transparent px-3 py-2 text-sm outline-none focus:border-accent"
           />
           <div>
-            <label className="text-xs text-muted">기본 썸네일 (필수)</label>
+            <label className="text-xs text-muted">
+              기본 썸네일 (필수) — 카드가 거의 정사각형(407:411)이라 사진도
+              정사각형에 가깝게 미리 잘라서 올리는 걸 추천해요. 비율이 많이
+              다르면 양옆/위아래가 잘려서 보여요.
+            </label>
             <input type="file" name="base_thumbnail" accept="image/*" required className="mt-1 w-full text-sm" />
           </div>
           <div>
-            <label className="text-xs text-muted">호버 썸네일 (선택)</label>
+            <label className="text-xs text-muted">
+              호버 썸네일 (선택) — 마찬가지로 정사각형에 가깝게
+            </label>
             <input type="file" name="hover_thumbnail" accept="image/*" className="mt-1 w-full text-sm" />
           </div>
           <button
