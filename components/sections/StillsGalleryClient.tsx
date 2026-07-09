@@ -72,7 +72,7 @@ export default function StillsGalleryClient({ items }: { items: GalleryFigureIte
       </div>
       <div
         ref={trackRef}
-        className="flex h-full w-max gap-4 overflow-x-auto px-6 pb-10 pt-24 snap-x snap-mandatory sm:gap-6 sm:px-10 md:h-screen md:items-center md:overflow-x-visible md:pb-0 md:pt-0 md:snap-none"
+        className="flex h-full gap-4 overflow-x-auto px-6 pb-10 pt-24 snap-x snap-mandatory sm:gap-6 sm:px-10 md:h-screen md:w-max md:items-center md:overflow-x-visible md:pb-0 md:pt-0 md:snap-none"
       >
         {items.map((item, i) => (
           <figure

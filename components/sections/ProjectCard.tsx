@@ -52,8 +52,16 @@ export default function ProjectCard({
   const clipId = `card-clip-${index}`;
 
   const card = (
-    <div className="group relative w-full" style={{ aspectRatio: "407 / 411" }}>
-      <svg viewBox="0 0 407 411" className="h-full w-full" aria-hidden="true">
+    <div
+      className="group relative w-full min-w-0 overflow-hidden"
+      style={{ aspectRatio: "407 / 411" }}
+    >
+      <svg
+        viewBox="0 0 407 411"
+        className="h-full w-full overflow-hidden"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
         <defs>
           <clipPath id={clipId}>
             <path d={FRAME_PATH} />
@@ -77,8 +85,8 @@ export default function ProjectCard({
                 className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
               />
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-gradient-to-t from-black/75 via-black/20 to-transparent p-4">
-                <span className="text-sm font-medium text-[#f2f2ec]">{title}</span>
-                <span className="text-xs text-[#8b8b85]">{meta}</span>
+                <span className="text-sm font-medium text-foreground">{title}</span>
+                <span className="text-xs text-muted">{meta}</span>
               </div>
             </div>
           </foreignObject>
@@ -92,7 +100,7 @@ export default function ProjectCard({
 
   if (videoUrl) {
     return (
-      <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="block">
+      <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="block min-w-0">
         {card}
       </a>
     );
