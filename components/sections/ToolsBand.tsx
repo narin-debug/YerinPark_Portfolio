@@ -2,9 +2,8 @@
 
 import { useLayoutEffect, useRef } from "react";
 import { gsap } from "@/lib/gsap";
-import { tools } from "@/lib/content";
 
-export default function ToolsBand() {
+export default function ToolsBand({ tools }: { tools: string[] }) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 

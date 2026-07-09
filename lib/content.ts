@@ -56,3 +56,59 @@ export const contact = {
 // 카드 프레임 SVG path — 03-animations.md 프로토타입 예시 (407x411 viewBox)
 export const FRAME_PATH =
   "M8 1h390.89a7 7 0 0 1 7 7v356.983a7 7 0 0 1-7 7H263.329a23.999 23.999 0 0 0-18.766 9.038l-16.499 20.694A21.999 21.999 0 0 1 210.862 410H8a7 7 0 0 1-7-7V8a7 7 0 0 1 7-7Z";
+
+// Hero/소개/툴/컨택 콘텐츠는 /admin/content에서 site_content 테이블에 저장한
+// 값으로 덮어쓸 수 있다. 아래 타입/함수는 그 행(row, null 가능)을 위 정적
+// 기본값과 병합해 항상 완전한 콘텐츠 객체를 만든다 — row가 없거나 특정 필드가
+// 비어 있으면 이 파일의 기존 정적 값을 그대로 쓴다.
+export type SiteContentRow = {
+  name: string | null;
+  role: string | null;
+  field: string | null;
+  experience_note: string | null;
+  hero_image_url: string | null;
+  intro_tagline: string | null;
+  intro_paragraphs: string | null;
+  editing_philosophy: string | null;
+  tools: string | null;
+  contact_emails: string | null;
+  contact_instagram: string | null;
+  contact_youtube: string | null;
+  contact_linkedin: string | null;
+  closing_line: string | null;
+};
+
+const DEFAULT_CLOSING_LINE = "새로운 프로젝트와 협업을 기다리고 있습니다. 편하게 연락 주세요.";
+
+function splitLines(value: string | null) {
+  return value
+    ? value
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+    : null;
+}
+
+export function resolveSiteContent(row: SiteContentRow | null) {
+  const defaultInstagram = contact.socials.find((s) => s.label === "Instagram")?.href ?? null;
+  const defaultLinkedin = contact.socials.find((s) => s.label === "LinkedIn")?.href ?? null;
+
+  return {
+    name: row?.name || profile.name,
+    role: row?.role || profile.role,
+    field: row?.field || profile.field,
+    experienceNote: row?.experience_note || profile.experienceNote,
+    heroImageUrl: row?.hero_image_url || null,
+    introTagline: row?.intro_tagline || null,
+    introParagraphs: splitLines(row?.intro_paragraphs ?? null) ?? introParagraphs,
+    editingPhilosophy: row?.editing_philosophy || editingPhilosophy,
+    tools: splitLines(row?.tools ?? null) ?? tools,
+    contactEmails: splitLines(row?.contact_emails ?? null) ?? contact.emails,
+    contactInstagram: row?.contact_instagram || defaultInstagram,
+    contactYoutube: row?.contact_youtube || null,
+    contactLinkedin: row?.contact_linkedin || defaultLinkedin,
+    closingLine: row?.closing_line || DEFAULT_CLOSING_LINE,
+  };
+}
+
+export type SiteContent = ReturnType<typeof resolveSiteContent>;

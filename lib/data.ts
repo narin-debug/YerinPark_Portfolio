@@ -1,5 +1,6 @@
 import "server-only";
 import { getSupabaseAdmin, IMAGE_BUCKET } from "@/lib/supabase";
+import type { SiteContentRow } from "@/lib/content";
 
 export type GalleryItem = {
   id: string;
@@ -175,5 +176,57 @@ export async function updateProject(
 export async function deleteProject(id: string) {
   const supabaseAdmin = getSupabaseAdmin();
   const { error } = await supabaseAdmin.from("projects").delete().eq("id", id);
+  if (error) throw error;
+}
+
+// ---------- 사이트 정보 (히어로/소개/툴/컨택) ----------
+
+export async function getSiteContent(): Promise<SiteContentRow | null> {
+  const supabaseAdmin = getSupabaseAdmin();
+  const { data, error } = await supabaseAdmin
+    .from("site_content")
+    .select("*")
+    .eq("id", 1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateSiteContent(params: {
+  name: string;
+  role: string;
+  field: string;
+  experience_note: string;
+  intro_tagline: string;
+  intro_paragraphs: string;
+  editing_philosophy: string;
+  tools: string;
+  contact_emails: string;
+  contact_instagram: string;
+  contact_youtube: string;
+  contact_linkedin: string;
+  closing_line: string;
+  hero_image?: File;
+}) {
+  const supabaseAdmin = getSupabaseAdmin();
+  const update: Record<string, string | null> = {
+    name: params.name || null,
+    role: params.role || null,
+    field: params.field || null,
+    experience_note: params.experience_note || null,
+    intro_tagline: params.intro_tagline || null,
+    intro_paragraphs: params.intro_paragraphs || null,
+    editing_philosophy: params.editing_philosophy || null,
+    tools: params.tools || null,
+    contact_emails: params.contact_emails || null,
+    contact_instagram: params.contact_instagram || null,
+    contact_youtube: params.contact_youtube || null,
+    contact_linkedin: params.contact_linkedin || null,
+    closing_line: params.closing_line || null,
+  };
+  if (params.hero_image && params.hero_image.size > 0) {
+    update.hero_image_url = await uploadImage(params.hero_image, "site");
+  }
+  const { error } = await supabaseAdmin.from("site_content").upsert({ id: 1, ...update });
   if (error) throw error;
 }

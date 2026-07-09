@@ -16,60 +16,73 @@
 ```
 app/
   layout.tsx        # 메타데이터, 폰트, 다크 테마 고정
-  page.tsx           # 섹션 조립 (Hero → Gallery → Intro → Projects → Tools → Contact)
+  page.tsx           # site_content를 한 번 조회해 각 섹션에 props로 내려줌
+                       # (Hero → Gallery → Intro → Projects → Tools → Contact)
   globals.css        # 테마 변수(--background/--foreground/--muted/--accent), 텍스트 리빌/카드 프레임 CSS
   admin/
     login/            # 공개 — 비밀번호 로그인 폼 (app/admin/login/actions.ts)
-    (protected)/       # /admin/* — middleware.ts가 세션 쿠키 검사 후 통과시킴
-      layout.tsx        # 상단 nav(갤러리/프로젝트 관리) + 로그아웃
+    (protected)/       # /admin/* — proxy.ts가 세션 쿠키 검사 후 통과시킴
+      layout.tsx        # 상단 nav(사이트 정보/갤러리/프로젝트 관리) + 로그아웃
+      content/           # 히어로/소개/툴/컨택 텍스트 전체를 한 폼에서 수정
       gallery/           # 갤러리 목록/추가/수정/삭제
       projects/           # 프로젝트 목록/추가/수정/삭제
 components/
   Placeholder.tsx     # [TODO] 자리에 쓰는 회색 대시 박스
   TextReveal.tsx      # SplitText로 줄 분리 + 라임 하이라이트 스윕 리빌 (재사용)
   sections/
-    Hero.tsx          # 섹션 1 — 이름/직함 리빌 + 배경 placeholder
+    Hero.tsx          # 섹션 1 — content prop으로 이름/직함/배경 이미지 렌더 (서버 컴포넌트)
     StillsGallery.tsx       # 섹션 2 — 서버 컴포넌트, Supabase에서 갤러리 항목 조회
     StillsGalleryClient.tsx # 섹션 2 — 가로 스크롤 갤러리 GSAP 로직 (pin+scrub)
-    Intro.tsx         # 섹션 3 — 자기소개/경력/편집 철학
+    Intro.tsx         # 섹션 3 — content prop으로 자기소개/경력/편집 철학 렌더
     ProjectGrid.tsx    # 섹션 4 — 서버 컴포넌트, Supabase에서 프로젝트 조회 + 3열 그리드
     ProjectCard.tsx    # 섹션 4 — SVG 프레임 카드 (clipPath+foreignObject, 호버 스트로크 리빌)
-    ToolsBand.tsx      # 섹션 5 — 툴 목록 + 패럴랙스
-    Contact.tsx        # 섹션 6 — 이메일/SNS + 마지막 줄 리빌 + 하단좌측 숨은 관리자 링크
+    ToolsBand.tsx      # 섹션 5 — tools prop(문자열 배열)만 받는 client 컴포넌트, 패럴랙스
+    Contact.tsx        # 섹션 6 — content prop으로 이메일/SNS/마지막 줄 렌더 + 하단좌측 숨은 관리자 링크
 lib/
-  content.ts          # 정적 텍스트/데이터 상수 + 갤러리·프로젝트가 비어있을 때 쓰는 placeholder 데모
+  content.ts          # 정적 기본값(profile/introParagraphs/tools/contact 등) +
+                        # resolveSiteContent(row) — DB row와 기본값을 병합해 완전한 콘텐츠 객체 생성
   gsap.ts              # gsap/ScrollTrigger/SplitText 플러그인 등록
   supabase.ts          # service-role Supabase 클라이언트 (서버 전용, "server-only")
   auth.ts              # 비밀번호 검증, 세션 쿠키 발급/검증 (jose + bcryptjs)
-  data.ts              # 갤러리/프로젝트 CRUD 쿼리 + 이미지 업로드
-middleware.ts          # /admin/* 접근 시 세션 쿠키 검사, 없으면 /admin/login으로 리다이렉트
+  data.ts              # 갤러리/프로젝트/site_content CRUD 쿼리 + 이미지 업로드
+proxy.ts               # /admin/* 접근 시 세션 쿠키 검사, 없으면 /admin/login으로 리다이렉트
 ```
 
 ## 콘텐츠 갱신 방법
 
-- **갤러리/프로젝트 그리드**: 정적 파일을 고치는 게 아니라 `/admin`에
-  로그인해서 등록한다 (설정 방법: `docs/06-admin-setup.md`). 등록된 항목이
-  하나도 없으면 기존 placeholder 데모가 자동으로 보이고, 하나라도 추가하면
-  그 순간부터 실제 등록한 항목으로 전환된다.
-- **그 외 섹션(Hero/소개/툴/컨택)**: 여전히 `lib/content.ts`를 직접 고치는
-  정적 방식. 실제 이미지가 필요하면 `public/`에 넣고 해당 `Placeholder`를
-  `<img>`/`<Image>`로 교체.
+**모든 텍스트/이미지가 이제 `/admin`에서 관리된다** (설정 방법:
+`docs/06-admin-setup.md`). `lib/content.ts`를 직접 고치는 옛 방식은 더 이상
+쓰지 않는다 — 그 파일의 상수들은 이제 "DB에 값이 없을 때 보여줄 기본값"
+역할만 한다.
 
-### 남아있는 [TODO] (04-content.md 기준)
+- **히어로/소개/툴/컨택**: `/admin/content` 한 페이지에서 전부 수정. 필드를
+  비워두면 `lib/content.ts`의 기본값이 계속 보인다.
+- **갤러리/프로젝트 그리드**: `/admin/gallery`, `/admin/projects`에서
+  추가/수정/삭제. 등록된 항목이 하나도 없으면 placeholder 데모가 보이고,
+  하나라도 추가하면 그 순간부터 실제 등록한 항목으로 전환된다.
 
-| 항목 | 위치 |
+### 남아있는 [TODO] (아직 아무도 admin에 입력하지 않은 것들)
+
+`docs/04-content.md`에 있던 TODO 항목들은 이제 코드가 아니라 **admin에서
+입력해야 할 항목**이 됐다. 현재(2026-07-09) Supabase에는 아직 비어 있어
+전부 placeholder/기본값으로 보인다.
+
+| 항목 | 입력 위치 |
 |---|---|
-| 히어로 배경 이미지/영상 | `components/sections/Hero.tsx` |
-| 자기소개 문구 | `components/sections/Intro.tsx` (상단 placeholder 박스) |
-| 작업 스틸컷 이미지 6~10장 + 캡션 | `/admin/gallery`에서 등록 (Supabase 설정 전까지는 `lib/content.ts`의 `galleryItems` 캡션으로 placeholder 표시) |
-| 프로젝트 항목(수/썸네일 2종/연도·카테고리/영상 링크) | `/admin/projects`에서 등록 (설정 전까지는 `lib/content.ts`의 `projectPlaceholders` 6개 슬롯으로 placeholder 표시) |
-| 유튜브 링크 | `lib/content.ts`의 `contact.socials` |
+| 히어로 배경 이미지/영상 | `/admin/content` → 히어로 배경 이미지 |
+| 자기소개 문구 | `/admin/content` → 자기소개 문구 |
+| 작업 스틸컷 이미지 6~10장 + 캡션 | `/admin/gallery` |
+| 프로젝트 항목(수/썸네일 2종/연도·카테고리/영상 링크) | `/admin/projects` |
+| 유튜브 링크 | `/admin/content` → 유튜브 링크 |
 
 ### 임의로 채워둔 항목 (확인/수정 필요)
 
 - 툴 목록 중 "일러스트레이션" → 실제 프로그램명인 "Illustrator"로 표기함
+  (기본값, `lib/content.ts`의 `tools`)
 - 컨택 섹션 마지막 줄("새로운 프로젝트와 협업을 기다리고 있습니다...")은
-  문서에 문구가 없어 임의로 작성한 카피 — `components/sections/Contact.tsx`
+  문서에 문구가 없어 임의로 작성한 카피 — 기본값은 `lib/content.ts`의
+  `DEFAULT_CLOSING_LINE`, `/admin/content`에서 원하는 문구로 바로 바꿀 수
+  있음
 
 ## 알아두면 좋은 구현 디테일 / 주의사항
 
@@ -103,8 +116,23 @@ middleware.ts          # /admin/* 접근 시 세션 쿠키 검사, 없으면 /ad
     파일 읽을 때 변수 치환으로 오인해 값이 깨지는 문제 때문 — 반드시
     `scripts/hash-password.mjs`로 생성한 값을 써야 하고, 생성한 bcrypt 해시를
     그대로 붙여넣으면 안 된다.
-  - 공개 페이지(`StillsGallery.tsx`, `ProjectGrid.tsx`)는 Supabase 조회를
-    try/catch로 감싸 실패 시 placeholder로 fallback한다. 관리자 페이지
-    (`/admin/gallery`, `/admin/projects`)는 감싸지 않아 Supabase 미설정 시
+  - 공개 페이지(`app/page.tsx`, `StillsGallery.tsx`, `ProjectGrid.tsx`)는
+    Supabase 조회를 try/catch로 감싸 실패 시 placeholder/기본값으로
+    fallback한다. 관리자 페이지(`/admin/content`, `/admin/gallery`,
+    `/admin/projects`)는 감싸지 않아 Supabase 미설정(또는 테이블 없음) 시
     에러가 그대로 보인다 — 의도된 동작이니 "왜 에러가 나지" 하고 감싸지
     않도록.
+- **site_content 테이블**: 히어로/소개/툴/컨택 텍스트를 저장하는 싱글턴
+  행(항상 `id=1`)이다. 행이 아예 없어도 정상이며(아직 admin에서 저장한
+  적이 없다는 뜻), `lib/content.ts`의 `resolveSiteContent(row)`가 없는
+  필드마다 기존 정적 기본값으로 채워 완전한 콘텐츠 객체를 만든다.
+  `intro_paragraphs`/`tools`/`contact_emails`는 텍스트 컬럼에 줄바꿈으로
+  구분해 저장하고 배열로 풀어 쓴다 (`/admin/content` textarea 한 줄 = 항목
+  하나).
+- **2026-07-09 실사용 Supabase로 전체 플로우 실검증**: 로그인, 갤러리/
+  프로젝트 항목 생성(실제 이미지 업로드 포함)·수정·삭제, 공개 페이지
+  반영까지 curl로 실제 서버 액션을 호출해 확인함(테스트 데이터는 검증 후
+  삭제해 DB/Storage를 원상복구). 이 과정에서 curl 명령행에 한글을 직접
+  넣으면 인코딩이 깨지는 걸 발견했는데, 이건 curl/셸 쪽 문제일 뿐 실제
+  브라우저로 입력하면 문제없다(파일로 값을 넘겨 재현 확인함) — 즉 앱 자체
+  버그는 아님.

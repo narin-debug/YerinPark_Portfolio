@@ -1,8 +1,14 @@
 import Link from "next/link";
 import TextReveal from "@/components/TextReveal";
-import { contact, profile } from "@/lib/content";
+import type { SiteContent } from "@/lib/content";
 
-export default function Contact() {
+export default function Contact({ content }: { content: SiteContent }) {
+  const socials = [
+    { label: "Instagram", href: content.contactInstagram },
+    { label: "YouTube", href: content.contactYoutube },
+    { label: "LinkedIn", href: content.contactLinkedin },
+  ];
+
   return (
     <section
       id="contact"
@@ -13,7 +19,7 @@ export default function Contact() {
       </div>
 
       <div className="mb-12 flex flex-col gap-3">
-        {contact.emails.map((email) => (
+        {content.contactEmails.map((email) => (
           <a
             key={email}
             href={`mailto:${email}`}
@@ -25,15 +31,8 @@ export default function Contact() {
       </div>
 
       <div className="mb-16 flex flex-wrap gap-4 text-sm uppercase tracking-wide sm:text-base">
-        {contact.socials.map((social) =>
-          social.todo ? (
-            <span
-              key={social.label}
-              className="border border-dashed border-white/20 px-3 py-1 text-muted"
-            >
-              {social.label} [TODO]
-            </span>
-          ) : (
+        {socials.map((social) =>
+          social.href ? (
             <a
               key={social.label}
               href={social.href}
@@ -43,6 +42,13 @@ export default function Contact() {
             >
               {social.label}
             </a>
+          ) : (
+            <span
+              key={social.label}
+              className="border border-dashed border-white/20 px-3 py-1 text-muted"
+            >
+              {social.label} [TODO]
+            </span>
           )
         )}
       </div>
@@ -51,11 +57,11 @@ export default function Contact() {
         as="p"
         className="max-w-2xl text-lg text-foreground sm:text-xl md:text-2xl"
       >
-        새로운 프로젝트와 협업을 기다리고 있습니다. 편하게 연락 주세요.
+        {content.closingLine}
       </TextReveal>
 
       <div className="mt-20 text-xs text-muted">
-        © {new Date().getFullYear()} {profile.name}
+        © {new Date().getFullYear()} {content.name}
         <Link
           href="/admin"
           aria-label="관리자"

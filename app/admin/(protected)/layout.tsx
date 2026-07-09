@@ -6,6 +6,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-background text-foreground">
       <header className="flex items-center justify-between border-b border-white/10 px-6 py-4">
         <nav className="flex gap-4 text-sm text-muted">
+          <Link href="/admin/content" className="hover:text-accent">
+            사이트 정보
+          </Link>
           <Link href="/admin/gallery" className="hover:text-accent">
             갤러리 관리
           </Link>

@@ -1,8 +1,8 @@
 import Placeholder from "@/components/Placeholder";
 import TextReveal from "@/components/TextReveal";
-import { editingPhilosophy, introParagraphs } from "@/lib/content";
+import type { SiteContent } from "@/lib/content";
 
-export default function Intro() {
+export default function Intro({ content }: { content: SiteContent }) {
   return (
     <section
       id="about"
@@ -12,14 +12,23 @@ export default function Intro() {
         About
       </div>
 
-      <Placeholder
-        label="[TODO] 자기소개 문구"
-        className="mb-12 h-28 w-full max-w-2xl sm:h-32"
-      />
+      {content.introTagline ? (
+        <TextReveal
+          as="p"
+          className="mb-12 max-w-2xl text-lg text-foreground sm:text-xl"
+        >
+          {content.introTagline}
+        </TextReveal>
+      ) : (
+        <Placeholder
+          label="[TODO] 자기소개 문구"
+          className="mb-12 h-28 w-full max-w-2xl sm:h-32"
+        />
+      )}
 
       <div className="grid gap-12 md:grid-cols-2 md:gap-16">
         <div className="space-y-2">
-          {introParagraphs.map((line, i) => (
+          {content.introParagraphs.map((line, i) => (
             <TextReveal
               key={i}
               as="p"
@@ -34,7 +43,7 @@ export default function Intro() {
           as="p"
           className="text-lg leading-relaxed text-muted sm:text-xl"
         >
-          {editingPhilosophy}
+          {content.editingPhilosophy}
         </TextReveal>
       </div>
     </section>
