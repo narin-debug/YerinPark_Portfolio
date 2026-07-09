@@ -1,3 +1,4 @@
+import Link from "next/link";
 import TextReveal from "@/components/TextReveal";
 import { contact, profile } from "@/lib/content";
 
@@ -55,6 +56,13 @@ export default function Contact() {
 
       <div className="mt-20 text-xs text-muted">
         © {new Date().getFullYear()} {profile.name}
+        <Link
+          href="/admin"
+          aria-label="관리자"
+          className="ml-3 text-muted/40 no-underline hover:text-muted"
+        >
+          ·
+        </Link>
       </div>
     </section>
   );

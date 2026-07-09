@@ -18,26 +18,42 @@ app/
   layout.tsx        # 메타데이터, 폰트, 다크 테마 고정
   page.tsx           # 섹션 조립 (Hero → Gallery → Intro → Projects → Tools → Contact)
   globals.css        # 테마 변수(--lime 등), 텍스트 리빌/카드 프레임 CSS
+  admin/
+    login/            # 공개 — 비밀번호 로그인 폼 (app/admin/login/actions.ts)
+    (protected)/       # /admin/* — middleware.ts가 세션 쿠키 검사 후 통과시킴
+      layout.tsx        # 상단 nav(갤러리/프로젝트 관리) + 로그아웃
+      gallery/           # 갤러리 목록/추가/수정/삭제
+      projects/           # 프로젝트 목록/추가/수정/삭제
 components/
   Placeholder.tsx     # [TODO] 자리에 쓰는 회색 대시 박스
   TextReveal.tsx      # SplitText로 줄 분리 + 라임 하이라이트 스윕 리빌 (재사용)
   sections/
     Hero.tsx          # 섹션 1 — 이름/직함 리빌 + 배경 placeholder
-    StillsGallery.tsx # 섹션 2 — 가로 스크롤 갤러리 (pin+scrub, 모바일은 네이티브 스와이프)
+    StillsGallery.tsx       # 섹션 2 — 서버 컴포넌트, Supabase에서 갤러리 항목 조회
+    StillsGalleryClient.tsx # 섹션 2 — 가로 스크롤 갤러리 GSAP 로직 (pin+scrub)
     Intro.tsx         # 섹션 3 — 자기소개/경력/편집 철학
-    ProjectGrid.tsx    # 섹션 4 — 3열 그리드 컨테이너
+    ProjectGrid.tsx    # 섹션 4 — 서버 컴포넌트, Supabase에서 프로젝트 조회 + 3열 그리드
     ProjectCard.tsx    # 섹션 4 — SVG 프레임 카드 (clipPath+foreignObject, 호버 스트로크 리빌)
     ToolsBand.tsx      # 섹션 5 — 툴 목록 + 패럴랙스
-    Contact.tsx        # 섹션 6 — 이메일/SNS + 마지막 줄 리빌
+    Contact.tsx        # 섹션 6 — 이메일/SNS + 마지막 줄 리빌 + 하단좌측 숨은 관리자 링크
 lib/
-  content.ts          # 모든 텍스트/데이터 상수 (콘텐츠 갱신은 여기서)
+  content.ts          # 정적 텍스트/데이터 상수 + 갤러리·프로젝트가 비어있을 때 쓰는 placeholder 데모
   gsap.ts              # gsap/ScrollTrigger/SplitText 플러그인 등록
+  supabase.ts          # service-role Supabase 클라이언트 (서버 전용, "server-only")
+  auth.ts              # 비밀번호 검증, 세션 쿠키 발급/검증 (jose + bcryptjs)
+  data.ts              # 갤러리/프로젝트 CRUD 쿼리 + 이미지 업로드
+middleware.ts          # /admin/* 접근 시 세션 쿠키 검사, 없으면 /admin/login으로 리다이렉트
 ```
 
 ## 콘텐츠 갱신 방법
 
-텍스트·이미지 자료가 준비되면 `lib/content.ts`만 고치면 된다. 실제 이미지 파일은
-`public/` 아래 넣고 `Placeholder` 컴포넌트를 `<Image>`(next/image)로 교체.
+- **갤러리/프로젝트 그리드**: 정적 파일을 고치는 게 아니라 `/admin`에
+  로그인해서 등록한다 (설정 방법: `docs/06-admin-setup.md`). 등록된 항목이
+  하나도 없으면 기존 placeholder 데모가 자동으로 보이고, 하나라도 추가하면
+  그 순간부터 실제 등록한 항목으로 전환된다.
+- **그 외 섹션(Hero/소개/툴/컨택)**: 여전히 `lib/content.ts`를 직접 고치는
+  정적 방식. 실제 이미지가 필요하면 `public/`에 넣고 해당 `Placeholder`를
+  `<img>`/`<Image>`로 교체.
 
 ### 남아있는 [TODO] (04-content.md 기준)
 
@@ -45,8 +61,8 @@ lib/
 |---|---|
 | 히어로 배경 이미지/영상 | `components/sections/Hero.tsx` |
 | 자기소개 문구 | `components/sections/Intro.tsx` (상단 placeholder 박스) |
-| 작업 스틸컷 이미지 6~10장 (캡션은 예시로 기입해둠) | `lib/content.ts`의 `galleryItems`, 이미지는 `StillsGallery.tsx` |
-| 프로젝트 항목(수/썸네일 2종/연도·카테고리/영상 링크) | `lib/content.ts`의 `projectPlaceholders`(현재 6개 슬롯), `ProjectCard.tsx` |
+| 작업 스틸컷 이미지 6~10장 + 캡션 | `/admin/gallery`에서 등록 (Supabase 설정 전까지는 `lib/content.ts`의 `galleryItems` 캡션으로 placeholder 표시) |
+| 프로젝트 항목(수/썸네일 2종/연도·카테고리/영상 링크) | `/admin/projects`에서 등록 (설정 전까지는 `lib/content.ts`의 `projectPlaceholders` 6개 슬롯으로 placeholder 표시) |
 | 유튜브 링크 | `lib/content.ts`의 `contact.socials` |
 
 ### 임의로 채워둔 항목 (확인/수정 필요)
@@ -77,3 +93,18 @@ lib/
 - **Turbopack dev 서버 CSS 캐시**: 드물게 `app/globals.css`를 고쳐도 브라우저에
   반영이 안 되는 경우가 있었음(코드 자체는 정상, 캐시 문제로 추정). 안 바뀌면
   dev 서버를 완전히 재시작.
+- **관리자 로그인 (`/admin`)**: Supabase 기반 CRUD(`docs/06-admin-setup.md`
+  참고)로 갤러리/프로젝트 콘텐츠를 등록한다. 비밀번호는 `bcryptjs`로 해시,
+  세션은 `jose`로 서명한 JWT를 httpOnly 쿠키(`admin_session`)에 저장하고
+  `proxy.ts`(Next 16에서 middleware.ts의 새 이름 — export 함수명도 `proxy`로
+  바꿔야 함)가 `/admin/*` 접근을 검사한다.
+  - `ADMIN_PASSWORD_HASH`는 bcrypt 해시를 **base64로 한 번 더 감싼 값**이다
+    (`lib/auth.ts`에서 디코딩). bcrypt 해시에 든 `$` 문자를 Next.js가 `.env`
+    파일 읽을 때 변수 치환으로 오인해 값이 깨지는 문제 때문 — 반드시
+    `scripts/hash-password.mjs`로 생성한 값을 써야 하고, 생성한 bcrypt 해시를
+    그대로 붙여넣으면 안 된다.
+  - 공개 페이지(`StillsGallery.tsx`, `ProjectGrid.tsx`)는 Supabase 조회를
+    try/catch로 감싸 실패 시 placeholder로 fallback한다. 관리자 페이지
+    (`/admin/gallery`, `/admin/projects`)는 감싸지 않아 Supabase 미설정 시
+    에러가 그대로 보인다 — 의도된 동작이니 "왜 에러가 나지" 하고 감싸지
+    않도록.

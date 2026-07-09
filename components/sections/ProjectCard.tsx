@@ -4,11 +4,41 @@ import { useLayoutEffect, useRef } from "react";
 import Placeholder from "@/components/Placeholder";
 import { FRAME_PATH } from "@/lib/content";
 
+type ThumbImage = { url: string } | { placeholderLabel: string };
+
 type ProjectCardProps = {
   index: number;
+  title: string;
+  meta: string;
+  baseImage: ThumbImage;
+  hoverImage: ThumbImage;
+  videoUrl?: string | null;
 };
 
-export default function ProjectCard({ index }: ProjectCardProps) {
+function Thumb({
+  image,
+  alt,
+  className,
+}: {
+  image: ThumbImage;
+  alt: string;
+  className: string;
+}) {
+  if ("url" in image) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={image.url} alt={alt} className={className} />;
+  }
+  return <Placeholder label={image.placeholderLabel} className={className} />;
+}
+
+export default function ProjectCard({
+  index,
+  title,
+  meta,
+  baseImage,
+  hoverImage,
+  videoUrl,
+}: ProjectCardProps) {
   const hoverPathRef = useRef<SVGPathElement>(null);
 
   useLayoutEffect(() => {
@@ -21,7 +51,7 @@ export default function ProjectCard({ index }: ProjectCardProps) {
 
   const clipId = `card-clip-${index}`;
 
-  return (
+  const card = (
     <div className="group relative w-full" style={{ aspectRatio: "407 / 411" }}>
       <svg viewBox="0 0 407 411" className="h-full w-full" aria-hidden="true">
         <defs>
@@ -36,21 +66,19 @@ export default function ProjectCard({ index }: ProjectCardProps) {
               {...{ xmlns: "http://www.w3.org/1999/xhtml" }}
               className="relative h-full w-full"
             >
-              <Placeholder
-                label={`[TODO] 기본 썸네일 · 프로젝트 ${index + 1}`}
-                className="absolute inset-0 h-full w-full transition-opacity duration-500 group-hover:opacity-0"
+              <Thumb
+                image={baseImage}
+                alt={title}
+                className="absolute inset-0 h-full w-full object-cover transition-opacity duration-500 group-hover:opacity-0"
               />
-              <Placeholder
-                label={`[TODO] 호버 썸네일(이미지/GIF) · 프로젝트 ${index + 1}`}
-                className="absolute inset-0 h-full w-full opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+              <Thumb
+                image={hoverImage}
+                alt={`${title} hover`}
+                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
               />
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-gradient-to-t from-black/75 via-black/20 to-transparent p-4">
-                <span className="text-sm font-medium text-[#f2f2ec]">
-                  [TODO] 프로젝트명 {index + 1}
-                </span>
-                <span className="text-xs text-[#8b8b85]">
-                  [TODO] 연도 · 카테고리
-                </span>
+                <span className="text-sm font-medium text-[#f2f2ec]">{title}</span>
+                <span className="text-xs text-[#8b8b85]">{meta}</span>
               </div>
             </div>
           </foreignObject>
@@ -61,4 +89,14 @@ export default function ProjectCard({ index }: ProjectCardProps) {
       </svg>
     </div>
   );
+
+  if (videoUrl) {
+    return (
+      <a href={videoUrl} target="_blank" rel="noopener noreferrer" className="block">
+        {card}
+      </a>
+    );
+  }
+
+  return card;
 }
