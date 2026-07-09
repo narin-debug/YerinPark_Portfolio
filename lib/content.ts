@@ -89,6 +89,17 @@ function splitLines(value: string | null) {
     : null;
 }
 
+// 관리자가 "www.linkedin.com/..." 처럼 프로토콜 없이 링크를 입력하면
+// 브라우저가 절대 URL이 아니라 우리 사이트 안의 상대 경로로 해석해서
+// 404가 난다. 프로토콜이 없으면 https://를 붙여준다.
+export function normalizeUrl(url: string | null | undefined) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+  if (/^([a-z][a-z0-9+.-]*:|\/\/)/i.test(trimmed)) return trimmed;
+  return `https://${trimmed}`;
+}
+
 export function resolveSiteContent(row: SiteContentRow | null) {
   const defaultInstagram = contact.socials.find((s) => s.label === "Instagram")?.href ?? null;
   const defaultLinkedin = contact.socials.find((s) => s.label === "LinkedIn")?.href ?? null;
@@ -104,9 +115,9 @@ export function resolveSiteContent(row: SiteContentRow | null) {
     editingPhilosophy: row?.editing_philosophy || editingPhilosophy,
     tools: splitLines(row?.tools ?? null) ?? tools,
     contactEmails: splitLines(row?.contact_emails ?? null) ?? contact.emails,
-    contactInstagram: row?.contact_instagram || defaultInstagram,
-    contactYoutube: row?.contact_youtube || null,
-    contactLinkedin: row?.contact_linkedin || defaultLinkedin,
+    contactInstagram: normalizeUrl(row?.contact_instagram) || defaultInstagram,
+    contactYoutube: normalizeUrl(row?.contact_youtube),
+    contactLinkedin: normalizeUrl(row?.contact_linkedin) || defaultLinkedin,
     closingLine: row?.closing_line || DEFAULT_CLOSING_LINE,
   };
 }

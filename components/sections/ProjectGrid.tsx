@@ -1,6 +1,6 @@
 import ProjectCard from "@/components/sections/ProjectCard";
 import { getProjects, type ProjectItem } from "@/lib/data";
-import { projectPlaceholders } from "@/lib/content";
+import { normalizeUrl, projectPlaceholders } from "@/lib/content";
 
 export default async function ProjectGrid() {
   // Supabase가 아직 설정되지 않았거나 일시적으로 오류가 나도 공개 페이지는
@@ -54,7 +54,7 @@ export default async function ProjectGrid() {
                     ? { url: project.hover_thumbnail_url }
                     : { placeholderLabel: "호버 썸네일 없음" }
                 }
-                videoUrl={project.video_url}
+                videoUrl={normalizeUrl(project.video_url)}
               />
             ))}
       </div>
