@@ -86,19 +86,38 @@ proxy.ts               # /admin/* 접근 시 세션 쿠키 검사, 없으면 /ad
 
 ## 알아두면 좋은 구현 디테일 / 주의사항
 
-- **가로 스크롤 갤러리**: `StillsGallery.tsx`에서 `min-width: 768px`일 때만
+- **가로 스크롤 갤러리**: `StillsGalleryClient.tsx`에서 `min-width: 768px`일 때만
   GSAP pin/scrub 활성화. 그 이하는 CSS `overflow-x: auto` + `snap`으로
   네이티브 스와이프 스크롤 (모바일에서 스크롤 하이재킹 방지).
+  ⚠️ 트랙(`w-max`)은 **반드시 `md:w-max`로 데스크톱에만** 줘야 한다 —
+  모바일까지 `w-max`를 주면 트랙 자체가 콘텐츠 전체 너비만큼 늘어나버려서
+  `overflow-x-auto`가 걸릴 "경계"가 없어져 스와이프가 전혀 안 먹는 버그가
+  생긴다(실제로 겪고 고친 이슈).
 - **텍스트 라인 리빌**: `TextReveal.tsx`가 SplitText로 줄을 나눈 뒤 각 줄을
   `.tr-line-mask`로 감싸고 `.tr-line-bar`(라임 바)를 GSAP로 움직인다.
   `.tr-line-bar`에는 **정적 CSS `transform`을 절대 주지 말 것** — GSAP가
   런타임에 설정하는 transform과 겹치면 두 개의 `translate()`가 합성되어
   애니메이션이 중간에 멈춘 것처럼 보이는 버그가 생긴다(실제로 겪고 고친 이슈).
 - **프로젝트 카드 호버**: `ProjectCard.tsx`가 SVG `<clipPath>` + `<foreignObject>`로
-  방패형 카드를 만들고, 호버 시 `stroke-dashoffset`을 0으로 만드는 CSS
-  transition으로 라임 테두리가 그려진다(GSAP 미사용, 스펙대로 CSS로 구현).
+  방패형 카드를 만든다. 호버 상태는 CSS `:hover`가 아니라 React state
+  (`active`, `onMouseEnter`/`onMouseLeave` + `onTouchStart`)로 관리한다 —
+  모바일은 hover 개념이 없어서 터치로도 같은 효과가 나야 하기 때문. 이
+  `active` 값으로 썸네일 크로스페이드(`opacity`)와 프레임
+  `stroke-dashoffset`을 전부 인라인 `style`로 직접 제어한다.
   `getTotalLength()`로 정확한 path 길이를 계산해 `useLayoutEffect`에서
-  인라인으로 `strokeDasharray`/`strokeDashoffset`을 설정한다.
+  state에 저장해두고 인라인 스타일에 쓴다.
+  - ⚠️ **`foreignObject` 안의 요소에는 opacity를 Tailwind 클래스(`opacity-0`
+    / `opacity-100`)로 토글하지 말 것.** 클래스는 정상적으로 바뀌는데
+    `getComputedStyle`상 값이 반대로 나오는 걸 실제로 겪었다(테스트 환경
+    한정일 수도 있지만 재현됨). 인라인 `style={{opacity: ...}}`로 바꾸니
+    바로 해결됐다 — `foreignObject` 안에서는 항상 인라인 style로 동적
+    스타일을 제어한다.
+  - ⚠️ 모바일 사파리(iPhone)에서 스케일된 SVG의 `foreignObject` 콘텐츠가
+    카드 크기에 맞춰 제대로 클리핑되지 않아 카드끼리 겹쳐 보이는 버그가
+    있었다. `<svg>`에 `overflow-hidden` 클래스와
+    `preserveAspectRatio="xMidYMid slice"`를 추가하고, 그리드 아이템(카드
+    최상위 요소, `videoUrl`이 있으면 `<a>` 태그)에 `min-w-0`을 줘서 고쳤다
+    (SVG의 고유 크기가 grid 트랙 너비를 밀어내는 걸 방지).
 - **TypeScript 캐스팅**: `TextReveal.tsx`의 `Tag = as as any`와
   `ProjectCard.tsx`의 `{...{xmlns: ...}}`는 React/TS 타입 한계를 피하기 위한
   의도적인 캐스팅(eslint-disable 주석 있음). 정상 동작이니 "타입 에러 수정"
