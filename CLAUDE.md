@@ -9,12 +9,16 @@
 - 페이지 구조(섹션 순서): `docs/02-structure.md`
 - 애니메이션 스펙: `docs/03-animations.md`
 - 콘텐츠(텍스트/이미지/영상): `docs/04-content.md`
+- **구현 현황·파일 구조·남은 TODO·주의사항: `docs/05-status.md` (새 세션에서
+  작업 이어갈 때 가장 먼저 읽을 문서)**
 
 ## 현재 진행 단계
 
-구조와 애니메이션 로직을 먼저 구현하는 단계. 이미지/영상은 실제 파일 대신
-placeholder(회색 박스 + 텍스트 라벨)로 대체하여 작업한다. 실제 자료는 준비되는
-대로 `docs/04-content.md`를 갱신하고 해당 경로에 파일을 넣어 교체한다.
+구조·애니메이션 로직 1차 구현 완료. GitHub(`narin-debug/YerinPark_Portfolio`)
+연동 및 Vercel 자동배포 연결 완료. 실제 이미지/영상 자료는 아직 없어
+placeholder(회색 박스 + 텍스트 라벨)로 대체되어 있다. 실제 자료가 준비되는
+대로 `docs/04-content.md`를 갱신하고, `lib/content.ts`와 각 섹션 컴포넌트의
+placeholder를 교체한다. 자세한 내용은 `docs/05-status.md` 참고.
 
 ## 참고 원본
 
