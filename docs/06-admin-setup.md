@@ -57,6 +57,17 @@ node -e "console.log(crypto.randomUUID()+crypto.randomUUID())"
 **Vercel 배포본에도 같은 4개 값을 추가해야 한다**: Vercel 프로젝트 →
 Settings → Environment Variables 에서 동일하게 등록 후 재배포.
 
+⚠️ 환경변수는 **추가한 시점 이후에 새로 시작되는 배포에만** 적용된다.
+"Deployments" 탭에서 예전 배포를 찾아 Redeploy하면 그때 그 커밋 그대로
+다시 빌드될 뿐 최신 코드/환경변수가 반영되지 않는다 — 항상 **가장 최근
+커밋의 배포**를 Redeploy하거나, 새 커밋을 push해서 자동 배포를 새로
+트리거해야 한다.
+
+⚠️ Vercel Settings → **Deployment Protection**에 "Vercel Authentication"이
+켜져 있으면, 로그인 여부와 상관없이 Vercel 계정으로 로그인하지 않은
+방문자는 사이트 자체를 못 본다(우리 앱 로그인 화면보다 먼저 막힘). 포트폴리오
+사이트는 누구나 봐야 하므로 이건 꺼둔다.
+
 ## 5. 로컬 확인
 
 ```bash
