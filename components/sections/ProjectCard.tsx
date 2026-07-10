@@ -96,6 +96,11 @@ export default function ProjectCard({
               <div className="absolute inset-x-0 bottom-0 flex flex-col gap-1 bg-gradient-to-t from-black/75 via-black/20 to-transparent p-4">
                 <span className="text-sm font-medium text-foreground">{title}</span>
                 <span className="text-xs text-muted">{meta}</span>
+                {videoUrl && (
+                  <span className="mt-1 text-[11px] text-muted">
+                    더블클릭하여 영상을 확인해 주세요.
+                  </span>
+                )}
               </div>
             </div>
           </foreignObject>
