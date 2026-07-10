@@ -125,6 +125,14 @@ proxy.ts               # /admin/* 접근 시 세션 쿠키 검사, 없으면 /ad
 - **Turbopack dev 서버 CSS 캐시**: 드물게 `app/globals.css`를 고쳐도 브라우저에
   반영이 안 되는 경우가 있었음(코드 자체는 정상, 캐시 문제로 추정). 안 바뀌면
   dev 서버를 완전히 재시작.
+- **SEO/공유 미리보기**: `app/page.tsx`의 `generateMetadata()`가 site_content
+  기반으로 title/description/OpenGraph/Twitter 메타를 만든다.
+  `app/opengraph-image.tsx`가 1200x630 미리보기 이미지를 자동 생성한다
+  (next/og). 기본 폰트엔 한글 글리프가 없어서 요청 시점에 Google
+  Fonts에서 Noto Sans KR 한글 서브셋을 받아온다 — 실패하면 sans-serif로
+  조용히 폴백. `layout.tsx`의 `metadataBase`는 Vercel이 자동으로 주는
+  `VERCEL_PROJECT_PRODUCTION_URL`을 쓴다(커스텀 도메인 쓰면
+  `NEXT_PUBLIC_SITE_URL` 환경변수로 덮어쓸 수 있음).
 - **관리자 로그인 (`/admin`)**: Supabase 기반 CRUD(`docs/06-admin-setup.md`
   참고)로 갤러리/프로젝트 콘텐츠를 등록한다. 비밀번호는 `bcryptjs`로 해시,
   세션은 `jose`로 서명한 JWT를 httpOnly 쿠키(`admin_session`)에 저장하고
