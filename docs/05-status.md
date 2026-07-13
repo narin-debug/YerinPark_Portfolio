@@ -125,6 +125,12 @@ proxy.ts               # /admin/* 접근 시 세션 쿠키 검사, 없으면 /ad
 - **Turbopack dev 서버 CSS 캐시**: 드물게 `app/globals.css`를 고쳐도 브라우저에
   반영이 안 되는 경우가 있었음(코드 자체는 정상, 캐시 문제로 추정). 안 바뀌면
   dev 서버를 완전히 재시작.
+- **파비콘/404/이미지 최적화**: `app/icon.svg`(이름 이니셜 모노그램),
+  `app/not-found.tsx`(사이트 톤에 맞춘 404), Hero/StillsGallery 이미지는
+  `next/image`로 전환(`next.config.ts`에 Supabase 도메인 remotePatterns
+  등록됨). ProjectCard 썸네일은 SVG `foreignObject` 안에 있어서 일부러
+  plain `<img>`로 남겨둠 — 그 안에서 이미 두 번 렌더링 버그를 겪어서
+  next/image의 더 복잡한 DOM 동작을 추가로 넣는 위험을 피함.
 - **SEO/공유 미리보기**: `app/page.tsx`의 `generateMetadata()`가 site_content
   기반으로 title/description/OpenGraph/Twitter 메타를 만든다.
   `app/opengraph-image.tsx`가 1200x630 미리보기 이미지를 자동 생성한다
