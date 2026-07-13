@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import Placeholder from "@/components/Placeholder";
 
@@ -80,11 +81,12 @@ export default function StillsGalleryClient({ items }: { items: GalleryFigureIte
             className="relative h-[60vh] w-[78vw] shrink-0 snap-start sm:h-[65vh] sm:w-[46vw] md:h-[70vh] md:w-[32vw]"
           >
             {"url" in item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={item.image.url}
                 alt={item.caption}
-                className="absolute inset-0 h-full w-full object-cover"
+                fill
+                sizes="(min-width: 768px) 32vw, (min-width: 640px) 46vw, 78vw"
+                className="object-cover"
               />
             ) : (
               <Placeholder

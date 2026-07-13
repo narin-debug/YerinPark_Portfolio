@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Placeholder from "@/components/Placeholder";
 import TextReveal from "@/components/TextReveal";
 import type { SiteContent } from "@/lib/content";
@@ -9,11 +10,13 @@ export default function Hero({ content }: { content: SiteContent }) {
       className="relative flex h-screen w-full items-end overflow-hidden bg-background"
     >
       {content.heroImageUrl ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
+        <Image
           src={content.heroImageUrl}
           alt={content.name}
-          className="absolute inset-0 h-full w-full object-cover"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover"
         />
       ) : (
         <Placeholder
